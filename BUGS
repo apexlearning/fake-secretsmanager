@@ -1,0 +1,3 @@
+* fake-secretsmanager doesn't mock very much of the Secrets Manager API.
+
+* The Dockerfile isn't very flexible.
