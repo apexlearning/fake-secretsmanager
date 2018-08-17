@@ -1,2 +1,2 @@
 # fake-secretsmanager
-A limited stand in for AWS secrets manager.
+A stand-in for AWS Secrets Manager for local testing that doesn't require access to the real Secrets Manager.
