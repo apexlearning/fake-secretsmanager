@@ -85,9 +85,15 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	reqId := uuid.New()
 	w.Header().Set("X-Amz-RequestId", reqId)
 
+	req, err := parseJSON(r.Body)
+	if err != nil {
+		jsonErrorReport(w, r, err.Error(), err.Status())
+		return
+	}
+
 	switch r.Header.Get("x-amz-target") {
 	case getSecretTarget:
-		val, err := getSecret(r.Body)
+		val, err := getSecret(req)
 		if err != nil {
 			jsonErrorReport(w, r, err.Error(), err.Status())
 			return
@@ -121,7 +127,11 @@ func parseJSON(data io.ReadCloser) (map[string]interface{}, smerror.Error) {
 	reqData := make(map[string]interface{})
 	dec := json.NewDecoder(data)
 	if err := dec.Decode(&reqData); err != nil {
-		return nil, smerror.CastErr(err)
+		smerr := smerror.CastErr(err)
+		// 500 I *think* is probably most appropriate here, but 400
+		// might be more appropriate.
+		smerr.SetStatus(http.StatusInternalServerError)
+		return nil, smerr
 	}
 	return reqData, nil
 }

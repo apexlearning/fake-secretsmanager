@@ -19,7 +19,6 @@ package main
 import (
 	"fmt"
 	"github.com/apexlearning/fake-secretsmanager/internal/smerror"
-	"io"
 	"net/http"
 )
 
@@ -33,14 +32,9 @@ type secretVersion struct {
 	VersionStages []string `json:"VersionStages"`
 }
 
-func getSecret(data io.ReadCloser) (*secretVersion, smerror.Error) {
-	req, err := parseJSON(data)
-	if err != nil {
-		return nil, err
-	}
-
+func getSecret(data map[string]interface{}) (*secretVersion, smerror.Error) {
 	var secretId string
-	if sid, ok := req["SecretId"]; ok {
+	if sid, ok := data["SecretId"]; ok {
 		secretId = sid.(string)
 	} else {
 		smerr := smerror.Errorf("no SecretId found in request!")
