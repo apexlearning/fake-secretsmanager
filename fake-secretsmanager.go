@@ -37,6 +37,9 @@ const (
 	arnBase              = "arn:aws:secretsmanager:%s:%012d:secret:%s"
 	getSecretTarget      = "secretsmanager.GetSecretValue"
 	describeSecretTarget = "secretsmanager.DescribeSecret"
+	resourceNotFound     = "ResourceNotFoundException"
+	internalServiceErr   = "InternalServiceError"
+	unknownException     = "UnknownException"
 )
 
 const accountId = 123456
@@ -154,10 +157,10 @@ func jsonErrorReport(w http.ResponseWriter, r *http.Request, errorStr string, st
 func exceptionType(status int) string {
 	switch status {
 	case http.StatusBadRequest:
-		return "ResourceNotFoundException"
+		return resourceNotFound
 	case http.StatusInternalServerError:
-		return "InternalServiceError"
+		return internalServiceErr
 	default:
-		return "UnknownException"
+		return unknownException
 	}
 }

@@ -39,6 +39,7 @@ func getSecret(data map[string]interface{}) (*secretVersion, smerror.Error) {
 	} else {
 		smerr := smerror.Errorf("no SecretId found in request!")
 		smerr.SetStatus(http.StatusInternalServerError)
+		return nil, smerr
 	}
 
 	s := new(secretVersion)
@@ -46,7 +47,7 @@ func getSecret(data map[string]interface{}) (*secretVersion, smerror.Error) {
 	s.CreatedDate = setTimestamp
 	s.Name = secretId
 	if scr, ok := secretMap[secretId]; !ok {
-		return nil, smerror.Errorf("secret %s not found", secretId)
+		return nil, smerror.Errorf("secret '%s' not found", secretId)
 	} else {
 		s.SecretString = scr
 	}
