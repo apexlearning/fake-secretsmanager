@@ -22,8 +22,8 @@ import (
 )
 
 const (
-	goodkey ="good/secret/key"
-	badkey = "bad/secret/key"
+	goodkey = "good/secret/key"
+	badkey  = "bad/secret/key"
 	goodval = "i'm a secret, shhh"
 )
 
@@ -66,5 +66,5 @@ func TestEmptySecretId(t *testing.T) {
 	} else if err != nil && err.Error() != "no SecretId found in request!" {
 		t.Errorf("Trying to fetch a secret without a SecretId failed, but for the wrong reason. Error was: '%s'.", err.Error())
 	}
-	
+
 }
