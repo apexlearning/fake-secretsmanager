@@ -17,12 +17,9 @@
 package main
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/apexlearning/fake-secretsmanager/internal/smerror"
 	"github.com/pborman/uuid"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -34,15 +31,15 @@ import (
 const (
 	region               = "us-west-2"
 	contentType          = "application/x-amz-json-1.1"
-	arnBase              = "arn:aws:secretsmanager:%s:%012d:secret:%s"
 	getSecretTarget      = "secretsmanager.GetSecretValue"
 	describeSecretTarget = "secretsmanager.DescribeSecret"
+	listSecretsTarget    = "secretsmanager.ListSecrets"
 	resourceNotFound     = "ResourceNotFoundException"
 	internalServiceErr   = "InternalServiceError"
 	unknownException     = "UnknownException"
 )
 
-const accountId = 123456
+const accountId = 123456789012
 
 var secretMap map[string]string
 var setTimestamp int64
@@ -107,60 +104,19 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	case describeSecretTarget:
 		jsonErrorReport(w, r, "Target secretsmanager.DescribeSecret hasn't been implemented yet.", http.StatusInternalServerError)
+	case listSecretsTarget:
+		list, err := listSecrets(req)
+		if err != nil {
+			jsonErrorReport(w, r, err.Error(), err.Status())
+			return
+		}
+		enc := json.NewEncoder(w)
+		if perr := enc.Encode(&list); perr != nil {
+			log.Println(perr)
+		}
 	default:
 		t := r.Header.Get("x-amz-target")
 		jsonErrorReport(w, r, fmt.Sprintf("Unimplemented target %s", t), http.StatusInternalServerError)
 	}
 	return
-}
-
-func makeVersionId(secretId string) string {
-	b := []byte(secretId)
-	idLen := 16
-	if len(b) < 16 {
-		k := make([]byte, 16-len(b))
-		b = append(k, b...)
-	}
-	str := hex.EncodeToString(b)
-	vId := fmt.Sprintf("SECRET-%s", str[len(str)-(idLen*2):])
-	return vId
-}
-
-func parseJSON(data io.ReadCloser) (map[string]interface{}, smerror.Error) {
-	reqData := make(map[string]interface{})
-	dec := json.NewDecoder(data)
-	if err := dec.Decode(&reqData); err != nil {
-		smerr := smerror.CastErr(err)
-		// 500 I *think* is probably most appropriate here, but 400
-		// might be more appropriate.
-		smerr.SetStatus(http.StatusInternalServerError)
-		return nil, smerr
-	}
-	return reqData, nil
-}
-
-func jsonErrorReport(w http.ResponseWriter, r *http.Request, errorStr string, status int) {
-	log.Println(errorStr)
-
-	jsonError := make(map[string]string)
-	jsonError["Message"] = errorStr
-	jsonError["__type"] = exceptionType(status)
-
-	w.WriteHeader(status)
-	enc := json.NewEncoder(w)
-	if err := enc.Encode(&jsonError); err != nil {
-		log.Println(err)
-	}
-	return
-}
-
-func exceptionType(status int) string {
-	switch status {
-	case http.StatusBadRequest:
-		return resourceNotFound
-	case http.StatusInternalServerError:
-		return internalServiceErr
-	default:
-		return unknownException
-	}
 }

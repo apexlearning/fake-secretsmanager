@@ -1,3 +1,7 @@
+0.2.0
+-----
+* Add ListSecrets to fake-secretsmanager's functionality.
+
 0.1.0
 -----
 * Initial and early release.

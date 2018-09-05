@@ -17,7 +17,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/apexlearning/fake-secretsmanager/internal/smerror"
 	"net/http"
 )
@@ -43,7 +42,7 @@ func getSecret(data map[string]interface{}) (*secretVersion, smerror.Error) {
 	}
 
 	s := new(secretVersion)
-	s.Arn = fmt.Sprintf(arnBase, region, accountId, secretId)
+	s.Arn = makeArn(secretId)
 	s.CreatedDate = setTimestamp
 	s.Name = secretId
 	if scr, ok := secretMap[secretId]; !ok {

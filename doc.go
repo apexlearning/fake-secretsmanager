@@ -57,6 +57,8 @@ CLI:
 
 	$ aws secretsmanager get-secret-value --endpoint-url http://localhost:7887 --secret-id foo/json/escaped/sssssh
 
+	$ aws secretsmanager list-secrets --endpoint http://localhost:7887
+
 Ruby:
 
 	secretsmanager = Aws::SecretsManager::Client.new(
@@ -70,6 +72,7 @@ Supported Functionality
 Currently, 'fake-secretsmanager' supports the following AWS Secrets Manager API (https://docs.aws.amazon.com/secretsmanager/latest/apireference/Welcome.html) functionality:
 
 * GetSecretValue (https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html)
+* ListSecrets (https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_ListSecrets.html)
 
 Other functionality is not present yet, but could be added if the need arises (or someone contributes it).
 
