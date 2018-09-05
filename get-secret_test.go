@@ -30,6 +30,8 @@ const (
 func init() {
 	secretMap = make(map[string]string)
 	secretMap[goodkey] = goodval
+	secretMap["foo/bar/bug"] = "sosecret"
+	secretMap["fizz/bizz/buzz/blug"] = "1234568899090903130443"
 }
 
 func TestGetSecret(t *testing.T) {
