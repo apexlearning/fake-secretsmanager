@@ -22,10 +22,10 @@ import (
 )
 
 func TestListSecrets(t *testing.T) {
-	r := make(map[string]interface{}) // empty - not using any of the values
-					  // that could be passed in.
+	// empty - not using any of the values that could be passed in.
+	r := make(map[string]interface{}) 
 	list, _ := listSecrets(r)
-	
+
 	expectedLen := len(secretMap)
 	if len(list.Items) != expectedLen {
 		t.Errorf("There should have been %d items in the secrets list, but there were %d instead.", expectedLen, len(list.Items))
