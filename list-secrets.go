@@ -59,13 +59,14 @@ func listSecrets(data map[string]interface{}) (*secretList, smerror.Error) {
 
 	i := 0
 	for k, _ := range secretMap {
-		arn := makeArn(k)
-		desc := fmt.Sprintf("A pretend secret, id '%s'", k)
-		vId := makeVersionId(k)
+		name := k
+		arn := makeArn(name)
+		desc := fmt.Sprintf("A pretend secret, id '%s'", name)
+		vId := makeVersionId(name)
 
 		item := new(secretListItem)
 		item.Arn = &arn
-		item.Name = &k
+		item.Name = &name
 		item.LastChangedDate = &setTimestamp
 		item.Description = &desc
 		item.SecretVersionsToStages = map[string][]string{vId: stages}
